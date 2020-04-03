@@ -27,6 +27,14 @@ locals {
   major_engine_version          = var.major_engine_version == "" ? local.computed_major_engine_version : var.major_engine_version
 }
 
+resource "aws_cloudwatch_log_group" "default" {
+  count             = var.enabled && var.enabled_cloudwatch_logs_exports ? 1 : 0
+  name              = "/aws/rds/cluster/${var.namespace}-/postgresql"
+  retention_in_days = var.logs_retention_in_days
+  kms_key_id        = var.kms_key_arn
+}
+
+
 resource "aws_db_instance" "default" {
   count                 = var.enabled ? 1 : 0
   identifier            = module.label.id
@@ -75,6 +83,10 @@ resource "aws_db_instance" "default" {
   performance_insights_enabled          = var.performance_insights_enabled
   performance_insights_kms_key_id       = var.performance_insights_enabled ? var.performance_insights_kms_key_id : null
   performance_insights_retention_period = var.performance_insights_enabled ? var.performance_insights_retention_period : null
+
+  depends_on = [
+    aws_cloudwatch_log_group.default
+  ]
 }
 
 resource "aws_db_parameter_group" "default" {

@@ -335,3 +335,8 @@ variable "ca_cert_identifier" {
   description = "The identifier of the CA certificate for the DB instance"
   default     = "rds-ca-2019"
 }
+
+variable "logs_retention_in_days" {
+  default = 1
+  type = number
+}
