@@ -340,3 +340,9 @@ variable "logs_retention_in_days" {
   default = 1
   type = number
 }
+
+variable "availability_zone" {
+  default = "ap-south-1a"
+  type = string
+  description = "Preferred availability zone for database instance"
+}
