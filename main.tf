@@ -89,7 +89,7 @@ resource "aws_db_instance" "default" {
     aws_cloudwatch_log_group.default
   ]
   lifecycle {
-    ignore_changes = ["password"]
+    ignore_changes = [password]
   }   
 }
 
