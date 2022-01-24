@@ -50,7 +50,7 @@ resource "aws_db_instance" "default" {
   storage_encrypted     = var.storage_encrypted
   kms_key_id            = var.kms_key_arn
 
-  vpc_security_group_ids = compact(
+  vpc_security_group_ids =  length(var.security_group_id_name) > 0 ? var.security_group_id_name : compact(
     concat(
       [join("", aws_security_group.default.*.id)],
       var.associate_security_group_ids
@@ -58,7 +58,7 @@ resource "aws_db_instance" "default" {
   )
 
   ca_cert_identifier          = var.ca_cert_identifier
-  db_subnet_group_name        = join("", aws_db_subnet_group.default.*.name)
+  db_subnet_group_name        = var.db_subnet_group_name != "" ? var.db_subnet_group_name : join("", aws_db_subnet_group.default.*.name)
   parameter_group_name        = length(var.parameter_group_name) > 0 ? var.parameter_group_name : join("", aws_db_parameter_group.default.*.name)
   option_group_name           = length(var.option_group_name) > 0 ? var.option_group_name : join("", aws_db_option_group.default.*.name)
   license_model               = var.license_model
@@ -73,6 +73,7 @@ resource "aws_db_instance" "default" {
   maintenance_window          = var.maintenance_window
   skip_final_snapshot         = var.skip_final_snapshot
   copy_tags_to_snapshot       = var.copy_tags_to_snapshot
+  replicate_source_db         = var.replicate_source_db
   backup_retention_period     = var.backup_retention_period
   backup_window               = var.backup_window
   tags                        = module.label.tags
@@ -143,14 +144,14 @@ resource "aws_db_option_group" "default" {
 }
 
 resource "aws_db_subnet_group" "default" {
-  count      = var.enabled ? 1 : 0
+  count      = var.create_db_subnet_group ? 1 : 0
   name       = module.label.id
   subnet_ids = var.subnet_ids
   tags       = module.label.tags
 }
 
 resource "aws_security_group" "default" {
-  count       = var.enabled ? 1 : 0
+  count       = var.create_security_group ? 1 : 0
   name        = module.label.id
   description = "Allow inbound traffic from the security groups"
   vpc_id      = var.vpc_id
@@ -158,7 +159,7 @@ resource "aws_security_group" "default" {
 }
 
 resource "aws_security_group_rule" "ingress_security_groups" {
-  count                    = var.enabled ? length(var.security_group_ids) : 0
+  count                    = var.create_security_group ? length(var.security_group_ids) : 0
   description              = "Allow inbound traffic from existing Security Groups"
   type                     = "ingress"
   from_port                = var.database_port
@@ -169,7 +170,7 @@ resource "aws_security_group_rule" "ingress_security_groups" {
 }
 
 resource "aws_security_group_rule" "ingress_cidr_blocks" {
-  count             = var.enabled && length(var.allowed_cidr_blocks) > 0 ? 1 : 0
+  count             = var.create_security_group && length(var.allowed_cidr_blocks) > 0 ? 1 : 0
   description       = "Allow inbound traffic from CIDR blocks"
   type              = "ingress"
   from_port         = var.database_port
@@ -180,7 +181,7 @@ resource "aws_security_group_rule" "ingress_cidr_blocks" {
 }
 
 resource "aws_security_group_rule" "egress" {
-  count             = var.enabled ? 1 : 0
+  count             = var.create_security_group ? 1 : 0
   description       = "Allow all egress traffic"
   type              = "egress"
   from_port         = 0

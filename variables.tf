@@ -192,6 +192,7 @@ variable "publicly_accessible" {
 variable "subnet_ids" {
   description = "List of subnets for the DB"
   type        = list(string)
+  default = []
 }
 
 variable "vpc_id" {
@@ -350,3 +351,36 @@ variable "availability_zone" {
   type = string
   description = "Preferred availability zone for database instance"
 }
+
+variable "replicate_source_db" {
+  description = "Specifies that this resource is a Replicate database, and to use this value as the source database. This correlates to the identifier of another Amazon RDS Database to replicate."
+  type        = string
+  default     = null
+}
+
+variable "create_db_subnet_group" {
+  type        = bool
+  default     = false
+  description = "Set to false to prevent the module from creating any resources"
+}
+
+variable "create_security_group" {
+  type        = bool
+  default     = true
+  description = "Set to false to prevent the module from creating any resources"
+}
+
+
+variable "db_subnet_group_name" {
+  description = "Name of DB subnet group. DB instance will be created in the VPC associated with the DB subnet group. If unspecified, will be created in the default VPC"
+  type        = string
+  default     = ""
+}
+
+
+variable "security_group_id_name" {
+  description = "Name of DB subnet group. DB instance will be created in the VPC associated with the DB subnet group. If unspecified, will be created in the default VPC"
+  type        = list(string)
+  default     = []
+}
+
