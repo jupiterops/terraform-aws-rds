@@ -374,7 +374,7 @@ variable "create_security_group" {
 variable "db_subnet_group_name" {
   description = "Name of DB subnet group. DB instance will be created in the VPC associated with the DB subnet group. If unspecified, will be created in the default VPC"
   type        = string
-  default     = ""
+  default     = null
 }
 
 
