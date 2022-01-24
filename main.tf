@@ -58,7 +58,7 @@ resource "aws_db_instance" "default" {
   )
 
   ca_cert_identifier          = var.ca_cert_identifier
-  db_subnet_group_name        = var.db_subnet_group_name != "" ? var.db_subnet_group_name : join("", aws_db_subnet_group.default.*.name)
+  db_subnet_group_name        = var.db_subnet_group_name == null ? var.db_subnet_group_name : join("", aws_db_subnet_group.default.*.name)
   parameter_group_name        = length(var.parameter_group_name) > 0 ? var.parameter_group_name : join("", aws_db_parameter_group.default.*.name)
   option_group_name           = length(var.option_group_name) > 0 ? var.option_group_name : join("", aws_db_option_group.default.*.name)
   license_model               = var.license_model
