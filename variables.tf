@@ -360,7 +360,7 @@ variable "replicate_source_db" {
 
 variable "create_db_subnet_group" {
   type        = bool
-  default     = false
+  default     = true
   description = "Set to false to prevent the module from creating any resources"
 }
 
@@ -370,13 +370,11 @@ variable "create_security_group" {
   description = "Set to false to prevent the module from creating any resources"
 }
 
-
 variable "db_subnet_group_name" {
   description = "Name of DB subnet group. DB instance will be created in the VPC associated with the DB subnet group. If unspecified, will be created in the default VPC"
   type        = string
   default     = null
 }
-
 
 variable "security_group_id_name" {
   description = "Name of DB subnet group. DB instance will be created in the VPC associated with the DB subnet group. If unspecified, will be created in the default VPC"
